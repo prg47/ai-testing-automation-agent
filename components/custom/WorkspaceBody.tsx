@@ -16,16 +16,19 @@ function WorkspaceBody(){
 
     const router = useRouter()
 
-    const [token,setToken] = useState('')
+    const [hasGithubConnection, setHasGithubConnection] = useState(false)
 
     useEffect(()=>{
         getGithubUserToken()
     },[])
 
     const getGithubUserToken = async()=>{
-        const result = await axios.get('/api/github/token');
-        console.log('token gotten')
-        setToken(result.data.token)
+        try {
+            const result = await axios.get('/api/github/token'); 
+            setHasGithubConnection(Boolean(result.data.connected));
+        } catch {
+            setHasGithubConnection(false);
+        }
     }
 
     const onAddRepo = async()=>{
@@ -43,7 +46,7 @@ function WorkspaceBody(){
                 <h2 className="text-lg">Connect Github & Add Repository</h2>
                 </div>
                 <div>
-                    {!token? <Button onClick={onAddRepo}>Setup</Button>
+                    {!hasGithubConnection? <Button onClick={onAddRepo}>Setup</Button>
                     :<Button>+Add Repo</Button>}
                 </div>
             </Card>
