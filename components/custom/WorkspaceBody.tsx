@@ -1,15 +1,39 @@
 "use client"
 import { UserDetailContext } from "@/context/UserDetailContext"
-import React, { useContext } from "react"
+import React, { useContext, useEffect, useState } from "react"
 import Image from "next/image"
 import { Button } from "../ui/button"
 import { Card } from "../ui/card"
 import EmptyWorkspace from "./EmptyWorkspace"
 import { CardContent } from "../ui/card"
+import { useRouter } from "next/navigation"
+import axios from "axios"
 
 
 function WorkspaceBody(){
+    
     const {userDetail} = useContext(UserDetailContext)
+
+    const router = useRouter()
+
+    const [hasGithubConnection, setHasGithubConnection] = useState(false)
+
+    useEffect(()=>{
+        getGithubUserToken()
+    },[])
+
+    const getGithubUserToken = async()=>{
+        try {
+            const result = await axios.get('/api/github/token'); 
+            setHasGithubConnection(Boolean(result.data.connected));
+        } catch {
+            setHasGithubConnection(false);
+        }
+    }
+
+    const onAddRepo = async()=>{
+        router.push('/api/github')
+    }
     return(
         <div>
             <div className="flex justify-between items-center">
@@ -22,7 +46,8 @@ function WorkspaceBody(){
                 <h2 className="text-lg">Connect Github & Add Repository</h2>
                 </div>
                 <div>
-                    <Button>Install</Button>
+                    {!hasGithubConnection? <Button onClick={onAddRepo}>Setup</Button>
+                    :<Button>+Add Repo</Button>}
                 </div>
             </Card>
 

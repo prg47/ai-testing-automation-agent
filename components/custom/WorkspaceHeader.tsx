@@ -1,23 +1,26 @@
-import React from 'react'
-import Image from 'next/image'
-import { UserButton } from '@clerk/nextjs'
+"use client"
+import { UserButton } from "@clerk/nextjs";
+import { useAuth } from "@clerk/nextjs";
+import Image from 'next/image';
 
-function WorkspaceHeader(){
-    return(
+function WorkspaceHeader() {
+    const { isLoaded } = useAuth();
+
+    return (
         <div className='flex w-full justify-between p-4'>
-            {/*Logo */}
-            <Image src={'/logo.svg'} alt='logo' width={50} height={50}/>
+            <Image src={'/logo.svg'} alt='logo' width={50} height={50} />
 
-            {/*Menu Options */}
             <ul className='flex gap-5 text-xl'>
                 <li>Workspace</li>
                 <li>Support</li>
             </ul>
 
-            {/*User Button */}
-            <UserButton />
+            {/* Always mounted, just invisible until Clerk is ready */}
+            <div style={{ visibility: isLoaded ? 'visible' : 'hidden' }}>
+                <UserButton />
+            </div>
         </div>
-    )
+    );
 }
 
-export default WorkspaceHeader
+export default WorkspaceHeader;
