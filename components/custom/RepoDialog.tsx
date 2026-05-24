@@ -15,6 +15,7 @@ import { useRouter } from "next/navigation"
 import axios from "axios"
 import { Input } from "../ui/input"
 import { UserDetailContext } from "@/context/UserDetailContext"
+import toast from "react-hot-toast"
 
 type Repo = {
   id:number,
@@ -67,25 +68,25 @@ function RepoDialog({ setRefreshPage }: { setRefreshPage: (refresh: boolean) => 
       return repos.filter(r=>r.full_name.toLowerCase().includes(q))
     },[searchTerm,repos])
 
-    const saveRepoToDB= async()=>{
-      if(!selectedRepo) return
-      console.log("selectedRepo:", JSON.stringify(selectedRepo, null, 2))
-
-      const result = await axios.post('/api/user-repo', {
-    repoId: selectedRepo.id,
-    name: selectedRepo.name,
-    full_name: selectedRepo.full_name || `${selectedRepo.owner}/${selectedRepo.name}`,
-    private: false,                  // ← not in selectedRepo at all, default to false
-    htmlUrl: selectedRepo.htmlUrl,   // ← was html_url, it's actually htmlUrl
-    description: selectedRepo.description,
-    userId: userDetail?.id,
-    owner: selectedRepo.owner,
-    })
-
-      console.log(result.data)
-      setOpen(false)
-      setRefreshPage(true)
-
+     const saveRepoToDB= async()=>{
+      if (!selectedRepo || !userDetail?.id) return
+      try {
+        await axios.post('/api/user-repo', {
+          repoId: selectedRepo.id,
+          name: selectedRepo.name,
+          full_name: selectedRepo.full_name || `${selectedRepo.owner}/${selectedRepo.name}`,
+          private: selectedRepo.private_,
+          htmlUrl: selectedRepo.htmlUrl,
+          description: selectedRepo.description,
+          userId: userDetail.id,
+          owner: selectedRepo.owner,
+        })
+        setOpen(false)
+        setRefreshPage(true)
+      } catch {
+        // show toast/error state here
+        toast.error("Internal server error");
+      }
     }
 
     return(

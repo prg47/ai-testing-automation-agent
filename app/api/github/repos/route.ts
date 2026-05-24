@@ -24,27 +24,30 @@ export async function GET() {
                     Authorization: `Bearer ${token}`,
                     Accept: "application/vnd.github+json",
                 },
+                signal: AbortSignal.timeout(10_000),
             }
         );
 
         // check github response
         if (!res.ok) {
-            const errorData = await res.json();
-    
-    // Clear the bad cookie and force re-auth
-        if (res.status === 401) {
-        const response = NextResponse.json(
-            { error: "Token expired, please reconnect GitHub" },
-            { status: 401 }
-        );
-        response.cookies.delete("gh_token"); // ← clear stale token
-        return response;
-    }
-
-    return NextResponse.json(
-        { error: "Failed to fetch repos", details: errorData },
-        { status: res.status }
-    );
+            if (res.status === 401) {
+                const response = NextResponse.json(
+                    { error: "Token expired, please reconnect GitHub" },
+                    { status: 401 }
+                );
+                response.cookies.delete("gh_token");
+                return response;
+            }
+            let errorData: unknown;
+            try {
+                errorData = await res.json();
+            } catch {
+                errorData = await res.text();
+            }
+            return NextResponse.json(
+                { error: "Failed to fetch repos", details: errorData },
+                { status: res.status }
+            );
         }
 
         const repos = await res.json();
