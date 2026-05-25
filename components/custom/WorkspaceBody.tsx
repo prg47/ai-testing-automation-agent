@@ -8,8 +8,24 @@ import EmptyWorkspace from "./EmptyWorkspace"
 import { CardContent } from "../ui/card"
 import { useRouter } from "next/navigation"
 import axios from "axios"
-import RepoDialog from "./RepoDialog"
+import RepoDialog, { Repo } from "./RepoDialog"
 import { refresh } from "next/cache"
+import toast from "react-hot-toast"
+import UserRepoList from "./UserRepoList"
+
+export type userRepo = {
+    id:number,
+  name: string,
+  fullName: string,
+  private_: boolean,
+  htmlUrl: string,
+  description: string,
+  updated_at: string,
+  language: string,
+  defaultBranch: string,
+  owner: string,
+}
+
 
 
 function WorkspaceBody(){
@@ -20,9 +36,15 @@ function WorkspaceBody(){
 
     const [hasGithubConnection, setHasGithubConnection] = useState(false)
 
+    const [userRepoList,setUserRepoList] = useState<userRepo[]>([])
+
     useEffect(()=>{
         getGithubUserToken()
     },[])
+
+    useEffect(()=>{
+        userDetail && getUserAddedRepoList()
+    },[userDetail])
 
     const getGithubUserToken = async()=>{
         try {
@@ -36,6 +58,28 @@ function WorkspaceBody(){
     const onAddRepo = async()=>{
         router.push('/api/github')
     }
+
+    const getUserAddedRepoList = async () => {
+        try {
+            const result = await axios.get(
+            `/api/user-repo?userId=${userDetail?.id}`
+            );
+
+            console.log(result.data);
+            setUserRepoList(result.data.data)
+
+            toast.success("Repositories fetched successfully");
+        } catch (error: any) {
+            console.error(error);
+
+            // Backend error message
+            const errorMessage =
+            error?.response?.data?.error ||
+            "Failed to fetch repositories";
+
+            toast.error(errorMessage);
+        }
+        };
     return(
         <div>
             <div className="flex justify-between items-center">
@@ -49,15 +93,18 @@ function WorkspaceBody(){
                 </div>
                 <div>
                     {!hasGithubConnection? <Button onClick={onAddRepo}>Setup</Button>
-                    : <RepoDialog setRefreshPage={(refresh : boolean)=>console.log(refresh)}/>}
+                    : <RepoDialog setRefreshPage={(refresh : boolean)=>getUserAddedRepoList()}/>}
                 </div>
             </Card>
 
-            <Card className="mt-1.5">
+            {!userRepoList?<Card className="mt-1.5">
                 <CardContent>
-                <EmptyWorkspace/>
+                <EmptyWorkspace/> 
                 </CardContent>
-            </Card>
+                </Card>:
+                <UserRepoList repoList={userRepoList}/>}
+                
+            
         </div>
     )
 }
