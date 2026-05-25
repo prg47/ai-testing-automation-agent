@@ -97,7 +97,7 @@ function WorkspaceBody(){
                 </div>
             </Card>
 
-            {!userRepoList?<Card className="mt-1.5">
+            {userRepoList.length === 0 ? <Card className="mt-1.5">
                 <CardContent>
                 <EmptyWorkspace/> 
                 </CardContent>
