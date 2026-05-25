@@ -17,7 +17,7 @@ import { Input } from "../ui/input"
 import { UserDetailContext } from "@/context/UserDetailContext"
 import toast from "react-hot-toast"
 
-type Repo = {
+export type Repo = {
   id:number,
   name: string,
   full_name: string,
@@ -26,7 +26,7 @@ type Repo = {
   description: string,
   updated_at: string,
   language: string,
-  default_branch: string,
+  defaultBranch: string,
   owner: string,
 }
 
