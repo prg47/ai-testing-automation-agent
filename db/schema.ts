@@ -1,5 +1,6 @@
 import { integer,boolean,varchar } from "drizzle-orm/pg-core";
 import { pgTable, serial, text, timestamp,jsonb } from "drizzle-orm/pg-core";
+import { Target } from "lucide-react";
 
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
@@ -19,7 +20,9 @@ export const repositories = pgTable("repositories",{
   description : text("description"),
   owner : text("owner").notNull(),
   defaultBranch: text("default_branch").default("main").notNull(),
-   language: text("language").default("Javascript"),
+  language: text("language").default("Javascript"),
+  targetDomain : varchar("target_domain").default('http://localhost:3000/'),
+  globalInstruction : text("global_instruction"),
 })
 
 export const TestCasesTable = pgTable("test_cases", {
