@@ -4,6 +4,7 @@ import { Badge } from "../ui/badge"
 import { Play, RefreshCw, SettingsIcon } from "lucide-react"
 import { Button } from "../ui/button"
 import { useState } from "react"
+import TestCaseSettingDialog from "./TestCaseSettingDialog"
 type Props = {
     testCases : TestCase[],
     onReload : any
@@ -46,9 +47,7 @@ function TestCaseList({testCases,onReload} : Props){
                         <div className="gap-4 flex">
                             <Badge variant={'secondary'}>{testCase.type}</Badge>
                             <Badge variant={'secondary'}>Pending</Badge>
-                            <Button size={'icon'} variant={'outline'}>
-                                <SettingsIcon className="h-4 w-4"/>
-                            </Button>
+                            <TestCaseSettingDialog testCase={testCase} setReload={onReload}/>
                             
                         </div>
                     </div>

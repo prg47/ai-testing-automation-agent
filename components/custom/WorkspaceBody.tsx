@@ -24,6 +24,8 @@ export type userRepo = {
   language: string,
   defaultBranch: string,
   owner: string,
+  targetDomain : string,
+  globalInstruction? : string
 }
 
 
@@ -102,7 +104,7 @@ function WorkspaceBody(){
                 <EmptyWorkspace/> 
                 </CardContent>
                 </Card>:
-                <UserRepoList repoList={userRepoList}/>}
+                <UserRepoList repoList={userRepoList} setReload={()=>getUserAddedRepoList()}/>}
                 
             
         </div>

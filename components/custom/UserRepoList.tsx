@@ -8,14 +8,16 @@ import {
 
 import Image from "next/image"
 import { Button } from "../ui/button"
-import { ListChecks,XCircle,CheckCircle2,TrendingUp,Sparkles, Loader2, Loader2Icon } from "lucide-react"
+import { ListChecks,XCircle,CheckCircle2,TrendingUp,Sparkles, Loader2, Loader2Icon, Globe2Icon, Link, Settings2 } from "lucide-react"
 import axios from "axios"
 import { useContext, useState } from "react"
 import { UserDetailContext } from "@/context/UserDetailContext"
 import TestCaseList from "./TestCaseList"
+import RepoSettings from "./RepoSettings"
 
 type props = {
-    repoList : userRepo[]
+    repoList : userRepo[],
+    setReload : any
 }
 
 export type TestCase = {
@@ -38,7 +40,7 @@ type StatusData = {
   passRate : number
 }
 
-function UserRepoList({repoList} : props){
+function UserRepoList({repoList,setReload} : props){
 
   const [statusData,setStatusData] = useState<StatusData>({
         totalTests: 0,
@@ -108,6 +110,15 @@ function UserRepoList({repoList} : props){
             <AccordionContent>
   <div className='pt-4 space-y-5'>
     
+    <div className="border rounded-xl flex justify-between items-center">
+      <div className="flex gap-3 items-center">
+        <Link className="text-primary"/>
+        <h2 >Target Domain : </h2>
+        <h2 className="bg-white p-1 px-1 rounded-md">{repo?.targetDomain}</h2>
+      </div>
+      <RepoSettings  repo={repo} setReload={setReload}/>
+    </div>
+
     <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4'>
       
       <StatusCard
